@@ -12,20 +12,18 @@ import retrofit2.Response
 import java.io.IOException
 import java.lang.RuntimeException
 
-class RepositoryImpl : Repository {
+class RepositoryImpl(private val apiProvider: ApiProvider) : Repository {
     //TODO DI
-    private val apiProvider = ApiProvider()
     private val mapper = Mappers()
     //TODO бработка ошибок для ui
-    override suspend fun getNewsList(country: String): List<NewsModel>? {
+    override suspend fun getNewsList(country: String,page:String): List<NewsModel>? {
         try {
-            val response = apiProvider.getNewsListApi().listNews(country)
+            val response = apiProvider.getNewsListApi().listNews(country = country, page = page)
+            Log.d("TAG",response.toString())
             return if (response.isSuccessful) {
                 if (response.body()?.status == RETROFIT_SUCCESS_RESULT) {
-                    if (response.body()!=null) {
-                        mapper.mapDataNewsListToDomainNewsList(response.body()!!.articles)
-                    }else{
-                        return null
+                    response.body()?.let {
+                        mapper.mapDataNewsListToDomainNewsList(it. articles)
                     }
                 } else {
                     throw RuntimeException("Server Error")
@@ -46,10 +44,8 @@ class RepositoryImpl : Repository {
         try {
             val response = apiProvider.getCountryApi().getCity(lat, lon)
             return if (response.isSuccessful) {
-                if (response.body() != null) {
-                    mapper.mapCityToCountry(response.body()!!.first())
-                } else null
-            } else {
+                response.body()?.let { mapper.mapCityToCountry(it.first()) }
+            }else{
                 null
             }
         } catch (e: HttpException) {

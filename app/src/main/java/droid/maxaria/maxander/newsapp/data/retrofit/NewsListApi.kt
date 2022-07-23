@@ -9,6 +9,8 @@ interface NewsListApi {
     @GET("v2/top-headlines")
     suspend fun listNews(
         @Query("country")country:String = "ru",
-        @Query("apiKey")apiKey:String = "4f09a82b08d14167aebe3e740105c3a9"
+        @Query("apiKey")apiKey:String = "4f09a82b08d14167aebe3e740105c3a9",
+        @Query("pageSize")pageSize:String = "20",
+        @Query("page")page:String = "1"
     ):Response<NewsModelInList>
 }

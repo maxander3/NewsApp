@@ -1,4 +1,4 @@
-package droid.maxaria.maxander.newsapp
+package droid.maxaria.maxander.newsapp.presentation
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -9,34 +9,51 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.LocationServices
+import droid.maxaria.maxander.newsapp.R
+import droid.maxaria.maxander.newsapp.databinding.ActivityMainBinding
+import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
+import droid.maxaria.maxander.newsapp.presentation.fragments.ParentFragment
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
+    private var _binding:ActivityMainBinding? = null
+    private val binding:ActivityMainBinding
+        get() = _binding!!
 
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
-    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         //-----------------------------------------------------------------
         checkPermissionsGps()
         getLastKnownLocation()
         observeViewModel()
         //-----------------------------------------------------------------
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
     private fun observeViewModel(){
-        viewModel.newsList.observe(this) {
-            Log.d("TAG", it.toString())
-        }
         viewModel.country.observe(this) {
             viewModel.country.value?.let { countryModel ->
-                viewModel.getNewsList(countryModel.country.lowercase())
+                binding.countryBtn.text = countryModel.country
+                launchParentFragment(countryModel)
             }
         }
+    }
+
+    private fun launchParentFragment(country:CountryModel){
+        supportFragmentManager.beginTransaction()
+            .replace(binding.mainFragmentContainer.id,ParentFragment.getInstance(country))
+            .commit()
     }
 
     private fun checkPermissionsGps() {

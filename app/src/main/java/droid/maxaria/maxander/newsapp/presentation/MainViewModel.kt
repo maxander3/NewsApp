@@ -1,4 +1,4 @@
-package droid.maxaria.maxander.newsapp
+package droid.maxaria.maxander.newsapp.presentation
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import droid.maxaria.maxander.newsapp.data.RepositoryImpl
+import droid.maxaria.maxander.newsapp.data.retrofit.ApiProvider
 import droid.maxaria.maxander.newsapp.domain.Repository
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
 import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
@@ -17,28 +18,16 @@ import kotlinx.coroutines.launch
 
 class MainViewModel:ViewModel() {
     //TODO DI
-    private val repository = RepositoryImpl()
-    private val getNewsListUseCase = GetNewsListUseCase(repository)
+    private val apiProvider = ApiProvider()
+    private val repository = RepositoryImpl(apiProvider)
     private val getCountryUseCase = GetCountryUseCase(repository)
 
-    private val _newsList = MutableLiveData<List<NewsModel>>()
-    val newsList:LiveData<List<NewsModel>>
-        get() = _newsList
+
     private val _country = MutableLiveData<CountryModel>()
     val country:LiveData<CountryModel>
         get() = _country
 
-    @SuppressLint("NullSafeMutableLiveData")
-    fun getNewsList(country:String){
-        viewModelScope.launch {
-            val response = getNewsListUseCase(country)
-            if (response != null) {
-                _newsList.postValue(response)
-            }else{
-                //TODO обработка ошибки
-            }
-        }
-    }
+
 
     @SuppressLint("NullSafeMutableLiveData")
     fun getCountryByCord(lat: Double, lon: Double){

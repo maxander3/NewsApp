@@ -6,7 +6,7 @@ import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
 import retrofit2.Response
 
 interface Repository {
-    suspend fun getNewsList(country:String): List<NewsModel>?
+    suspend fun getNewsList(country:String,page:String): List<NewsModel>?
     suspend fun getCountry(lat:String,lon:String): CountryModel?
 
 }
