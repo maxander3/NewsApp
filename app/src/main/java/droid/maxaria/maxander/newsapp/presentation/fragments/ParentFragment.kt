@@ -1,17 +1,17 @@
 package droid.maxaria.maxander.newsapp.presentation.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.viewpager2.widget.ViewPager2
 import droid.maxaria.maxander.newsapp.R
 import droid.maxaria.maxander.newsapp.databinding.FragmentParentFragmentBinding
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
 import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
+import droid.maxaria.maxander.newsapp.presentation.MainActivity
 import java.lang.RuntimeException
 
 class ParentFragment : Fragment() {
@@ -41,7 +41,19 @@ class ParentFragment : Fragment() {
         observeViewModel()
     }
 
+    fun searchNewsByTag(){
+        try {
+            val text = (activity as MainActivity).binding.searchEditTxt.text.toString()
+            viewModel.getNewsListByTag(text,viewModel.currentNewsTag.value.toString())
+        }catch (e:Exception){
+            throw RuntimeException("Unknown activity")
+        }
+    }
+
     private fun observeViewModel(){
+        viewModel.error.observe(viewLifecycleOwner){
+            Toast.makeText(context,it,Toast.LENGTH_LONG).show()
+        }
         viewModel.currentNewsTag.observe(viewLifecycleOwner){
             apiCall(it)
         }
@@ -59,7 +71,7 @@ class ParentFragment : Fragment() {
     }
 
     private fun apiCall(tag:String){
-        viewModel.getNewsList(tag)
+        viewModel.getNewsListByCountry(tag)
     }
 
     private fun parseArgs(){

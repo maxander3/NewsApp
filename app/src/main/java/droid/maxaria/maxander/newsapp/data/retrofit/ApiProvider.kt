@@ -19,6 +19,7 @@ class ApiProvider {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    fun getNewsListApi():NewsListApi = news.create(NewsListApi::class.java)
+    fun getNewsListByCountryApi():NewsListApiCountry = news.create(NewsListApiCountry::class.java)
     fun getCountryApi():CityApi = country.create(CityApi::class.java)
+    fun getNewsListByTagApi():NewsListApiEverything = news.create(NewsListApiEverything::class.java)
 }

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.LocationServices
@@ -19,8 +20,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
-    private var _binding:ActivityMainBinding? = null
-    private val binding:ActivityMainBinding
+    private var _binding: ActivityMainBinding? = null
+    val binding: ActivityMainBinding
         get() = _binding!!
 
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
@@ -34,6 +35,11 @@ class MainActivity : AppCompatActivity() {
         getLastKnownLocation()
         observeViewModel()
         //-----------------------------------------------------------------
+        binding.searchBtn.setOnClickListener {
+            val fragment = (supportFragmentManager
+                .findFragmentById(binding.mainFragmentContainer.id) as ParentFragment)
+            fragment.searchNewsByTag()
+        }
     }
 
     override fun onDestroy() {
@@ -41,7 +47,10 @@ class MainActivity : AppCompatActivity() {
         _binding = null
     }
 
-    private fun observeViewModel(){
+    private fun observeViewModel() {
+        viewModel.error.observe(this) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
+        }
         viewModel.country.observe(this) {
             viewModel.country.value?.let { countryModel ->
                 binding.countryBtn.text = countryModel.country
@@ -50,9 +59,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun launchParentFragment(country:CountryModel){
+    private fun launchParentFragment(country: CountryModel) {
         supportFragmentManager.beginTransaction()
-            .replace(binding.mainFragmentContainer.id,ParentFragment.getInstance(country))
+            .replace(binding.mainFragmentContainer.id, ParentFragment.getInstance(country))
             .commit()
     }
 
@@ -77,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
-                    viewModel.getCountryByCord(location.latitude,location.longitude)
+                    viewModel.getCountryByCord(location.latitude, location.longitude)
                 }
             }
     }
