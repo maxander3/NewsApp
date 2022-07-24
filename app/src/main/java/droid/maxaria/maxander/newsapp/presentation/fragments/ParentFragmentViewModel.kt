@@ -25,8 +25,8 @@ class ParentFragmentViewModel : ViewModel() {
     private val _newsList = MutableLiveData<List<NewsModel>>()
     val newsList: LiveData<List<NewsModel>>
         get() = _newsList
+    val currentCountry = MutableLiveData<String>()
     val currentNewsTag = MutableLiveData<String>()
-
 
     fun getNewsListByCountry(tag: String) {
         viewModelScope.launch {

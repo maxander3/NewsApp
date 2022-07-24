@@ -7,11 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import droid.maxaria.maxander.newsapp.R
 import droid.maxaria.maxander.newsapp.databinding.FragmentParentFragmentBinding
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
 import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
-import droid.maxaria.maxander.newsapp.presentation.MainActivity
 import java.lang.RuntimeException
 
 class ParentFragment : Fragment() {
@@ -21,6 +19,7 @@ class ParentFragment : Fragment() {
     private var _binding:FragmentParentFragmentBinding? = null
     private val binding:FragmentParentFragmentBinding
         get() = _binding!!
+    private var currentMode:String = COUNTRY_MODE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         parseArgs()
@@ -33,7 +32,6 @@ class ParentFragment : Fragment() {
     ): View {
         _binding = FragmentParentFragmentBinding.inflate(inflater,container,false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,20 +39,16 @@ class ParentFragment : Fragment() {
         observeViewModel()
     }
 
-    fun searchNewsByTag(){
-        try {
-            val text = (activity as MainActivity).binding.searchEditTxt.text.toString()
-            viewModel.getNewsListByTag(text,viewModel.currentNewsTag.value.toString())
-        }catch (e:Exception){
-            throw RuntimeException("Unknown activity")
-        }
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
     }
 
     private fun observeViewModel(){
         viewModel.error.observe(viewLifecycleOwner){
             Toast.makeText(context,it,Toast.LENGTH_LONG).show()
         }
-        viewModel.currentNewsTag.observe(viewLifecycleOwner){
+        viewModel.currentCountry.observe(viewLifecycleOwner){
             apiCall(it)
         }
         viewModel.newsList.observe(viewLifecycleOwner){
@@ -70,24 +64,47 @@ class ParentFragment : Fragment() {
         binding.viewPager.adapter = adapter
     }
 
-    private fun apiCall(tag:String){
-        viewModel.getNewsListByCountry(tag)
+    private fun apiCall(country:String){
+        when (currentMode) {
+            TAG_MODE -> viewModel.getNewsListByTag(viewModel.currentNewsTag.value!!,country)
+            COUNTRY_MODE -> viewModel.getNewsListByCountry(country)
+            else -> throw RuntimeException("Unknown mode")
+        }
     }
 
     private fun parseArgs(){
+        arguments?.getString(TAG_KEY).let{
+            if ( it != null){
+                currentMode = TAG_MODE
+                viewModel.currentNewsTag.value = it
+            }
+        }
         arguments?.getParcelable<CountryModel>(COUNTRY_KEY).let {
-            viewModel.currentNewsTag.value = it?.country ?:throw RuntimeException("Can't detect location")
+            viewModel.currentCountry.value = it?.country ?:throw RuntimeException("Can't detect location")
         }
     }
 
     companion object{
+        private const val TAG_KEY = "tag key"
         private const val COUNTRY_KEY = "country key"
-        fun getInstance(country: CountryModel):ParentFragment{
+        private const val COUNTRY_MODE = "country mode"
+        private const val TAG_MODE = "tag mode"
+        fun getInstanceByCountry(country: CountryModel):ParentFragment{
             return ParentFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(COUNTRY_KEY,country)
                 }
             }
         }
+        fun getInstanceByTag(tag: String,country: CountryModel):ParentFragment{
+            return ParentFragment().apply {
+                arguments = Bundle().apply {
+                    putString(TAG_KEY,tag)
+                    putParcelable(COUNTRY_KEY,country)
+                }
+            }
+        }
     }
+
+
 }

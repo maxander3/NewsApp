@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
@@ -13,9 +12,11 @@ import com.google.android.gms.location.LocationServices
 import droid.maxaria.maxander.newsapp.R
 import droid.maxaria.maxander.newsapp.databinding.ActivityMainBinding
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
+import droid.maxaria.maxander.newsapp.presentation.fragments.NewsFragment
 import droid.maxaria.maxander.newsapp.presentation.fragments.ParentFragment
+import droid.maxaria.maxander.newsapp.presentation.fragments.WebViewFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),NewsFragment.OnImgClickListener {
 
     private val viewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
@@ -36,9 +37,8 @@ class MainActivity : AppCompatActivity() {
         observeViewModel()
         //-----------------------------------------------------------------
         binding.searchBtn.setOnClickListener {
-            val fragment = (supportFragmentManager
-                .findFragmentById(binding.mainFragmentContainer.id) as ParentFragment)
-            fragment.searchNewsByTag()
+            val tag = binding.searchEditTxt.text.toString()
+            launchParentFragmentByTag(tag)
         }
     }
 
@@ -54,14 +54,25 @@ class MainActivity : AppCompatActivity() {
         viewModel.country.observe(this) {
             viewModel.country.value?.let { countryModel ->
                 binding.countryBtn.text = countryModel.country
-                launchParentFragment(countryModel)
+                launchParentFragmentByCountry(countryModel)
             }
         }
     }
-
-    private fun launchParentFragment(country: CountryModel) {
+    private fun launchParentFragmentByTag(tag: String) {
         supportFragmentManager.beginTransaction()
-            .replace(binding.mainFragmentContainer.id, ParentFragment.getInstance(country))
+            .replace(binding.mainFragmentContainer.id, ParentFragment.getInstanceByTag(tag,viewModel.country.value!!))
+            .commit()
+    }
+
+    private fun launchParentFragmentByCountry(country: CountryModel) {
+        supportFragmentManager.beginTransaction()
+            .replace(binding.mainFragmentContainer.id, ParentFragment.getInstanceByCountry(country))
+            .commit()
+    }
+    private fun launchWebViewFragment(url: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(binding.mainFragmentContainer.id, WebViewFragment.getInstance(url))
+            .addToBackStack(null)
             .commit()
     }
 
@@ -94,4 +105,10 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val GEO_LOCATION_REQUEST_COD_SUCCESS = 1
     }
+
+    override fun onClick(url: String) {
+        launchWebViewFragment(url)
+    }
+
+
 }
