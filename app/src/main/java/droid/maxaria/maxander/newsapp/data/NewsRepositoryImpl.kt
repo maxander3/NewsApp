@@ -1,15 +1,14 @@
 package droid.maxaria.maxander.newsapp.data
 
-import android.util.Log
 import droid.maxaria.maxander.newsapp.data.retrofit.ApiProvider
-import droid.maxaria.maxander.newsapp.domain.Repository
+import droid.maxaria.maxander.newsapp.domain.NewsRepository
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
 import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
 import retrofit2.HttpException
 import java.io.IOException
 import java.lang.RuntimeException
 
-class RepositoryImpl(private val apiProvider: ApiProvider) : Repository {
+class NewsRepositoryImpl(private val apiProvider: ApiProvider) : NewsRepository {
     //TODO DI
     private val mapper = Mappers()
 

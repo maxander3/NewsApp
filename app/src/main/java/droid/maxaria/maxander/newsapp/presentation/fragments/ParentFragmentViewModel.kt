@@ -1,11 +1,10 @@
 package droid.maxaria.maxander.newsapp.presentation.fragments
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import droid.maxaria.maxander.newsapp.data.RepositoryImpl
+import droid.maxaria.maxander.newsapp.data.NewsRepositoryImpl
 import droid.maxaria.maxander.newsapp.data.retrofit.ApiProvider
 import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
 import droid.maxaria.maxander.newsapp.domain.usecases.GetNewsListByCountryUseCase
@@ -15,9 +14,9 @@ import kotlinx.coroutines.launch
 class ParentFragmentViewModel : ViewModel() {
     //TODO DI
     private val apiProvider = ApiProvider()
-    private val repository = RepositoryImpl(apiProvider)
-    private val getNewsListUseCase = GetNewsListByCountryUseCase(repository)
-    private val getNewsListByTagUseCase = GetNewsListByTagUseCase(repository)
+    private val newsRepository = NewsRepositoryImpl(apiProvider)
+    private val getNewsListUseCase = GetNewsListByCountryUseCase(newsRepository)
+    private val getNewsListByTagUseCase = GetNewsListByTagUseCase(newsRepository)
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String>
