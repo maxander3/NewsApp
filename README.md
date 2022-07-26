@@ -33,3 +33,10 @@ Use case:
 * Поиск новостей по региону
 * Поиск новостей по тэгу
 * Запуск WebView источника
+
+Использованные технологии:
+=====================
+1. Google Play Service Location
+2. Picasso
+3. Retorfit
+4. ViewBinding
