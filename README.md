@@ -40,3 +40,4 @@ Use case:
 2. Picasso
 3. Retorfit
 4. ViewBinding
+5. Hilt
