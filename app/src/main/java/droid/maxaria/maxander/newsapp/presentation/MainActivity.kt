@@ -6,23 +6,23 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.LocationServices
+import dagger.hilt.android.AndroidEntryPoint
 import droid.maxaria.maxander.newsapp.R
 import droid.maxaria.maxander.newsapp.databinding.ActivityMainBinding
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
 import droid.maxaria.maxander.newsapp.presentation.fragments.NewsFragment
 import droid.maxaria.maxander.newsapp.presentation.fragments.ParentFragment
 import droid.maxaria.maxander.newsapp.presentation.fragments.WebViewFragment
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(),NewsFragment.OnImgClickListener {
 
-    private val viewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
-    }
+    private val viewModel:MainViewModel by viewModels()
     private var _binding: ActivityMainBinding? = null
-    val binding: ActivityMainBinding
+    private val binding: ActivityMainBinding
         get() = _binding!!
 
     private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
@@ -31,11 +31,10 @@ class MainActivity : AppCompatActivity(),NewsFragment.OnImgClickListener {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        //-----------------------------------------------------------------
+
         checkPermissionsGps()
         getLastKnownLocation()
         observeViewModel()
-        //-----------------------------------------------------------------
         binding.searchBtn.setOnClickListener {
             val tag = binding.searchEditTxt.text.toString()
             launchParentFragmentByTag(tag)

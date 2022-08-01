@@ -7,8 +7,9 @@ import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
 import retrofit2.HttpException
 import java.io.IOException
 import java.lang.RuntimeException
+import javax.inject.Inject
 
-class NewsRepositoryImpl(private val apiProvider: ApiProvider) : NewsRepository {
+class NewsRepositoryImpl @Inject constructor(private val apiProvider: ApiProvider) : NewsRepository {
     //TODO DI
     private val mapper = Mappers()
 

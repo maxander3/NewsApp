@@ -5,17 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import droid.maxaria.maxander.newsapp.data.NewsRepositoryImpl
 import droid.maxaria.maxander.newsapp.data.retrofit.ApiProvider
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
 import droid.maxaria.maxander.newsapp.domain.usecases.GetCountryUseCase
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel:ViewModel() {
-    //TODO DI
-    private val apiProvider = ApiProvider()
-    private val newsRepository = NewsRepositoryImpl(apiProvider)
-    private val getCountryUseCase = GetCountryUseCase(newsRepository)
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val getCountryUseCase: GetCountryUseCase
+):ViewModel() {
 
     private val _error = MutableLiveData<Unit>()
     val error: LiveData<Unit>

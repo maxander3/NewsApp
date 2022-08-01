@@ -16,6 +16,7 @@ class WebViewFragment : Fragment() {
     private var _binding: FragmentWebViewBinding? = null
     private val binding: FragmentWebViewBinding
         get() = _binding!!
+
     private lateinit var url:String
 
     override fun onCreate(savedInstanceState: Bundle?) {

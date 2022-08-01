@@ -4,8 +4,9 @@ package droid.maxaria.maxander.newsapp.data.retrofit
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+import javax.inject.Inject
 
-class ApiProvider {
+class ApiProvider @Inject constructor() {
 
     private val news by lazy { initNewsApi() }
     private val country by lazy {initGeoCodeApi()}

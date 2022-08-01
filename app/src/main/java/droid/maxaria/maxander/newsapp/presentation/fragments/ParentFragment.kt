@@ -7,18 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import droid.maxaria.maxander.newsapp.databinding.FragmentParentFragmentBinding
 import droid.maxaria.maxander.newsapp.domain.country_model.CountryModel
 import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
 import java.lang.RuntimeException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ParentFragment : Fragment() {
-    private lateinit var adapter: ViewPagerAdapter
-    //TODO di_________________________________________________________
+    @Inject lateinit var adapter: ViewPagerAdapter
+
     private val viewModel: ParentFragmentViewModel by viewModels()
+
     private var _binding:FragmentParentFragmentBinding? = null
     private val binding:FragmentParentFragmentBinding
         get() = _binding!!
+
     private var currentMode:String = COUNTRY_MODE
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +64,6 @@ class ParentFragment : Fragment() {
 
 
     private fun initAdapter(list: List<NewsModel>){
-        adapter = ViewPagerAdapter(this)
         adapter.setNewsList(list)
         binding.viewPager.adapter = adapter
     }
