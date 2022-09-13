@@ -1,36 +1,36 @@
 package droid.maxaria.maxander.newsapp.presentation.fragments
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import droid.maxaria.maxander.newsapp.data.RepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import droid.maxaria.maxander.newsapp.data.NewsRepositoryImpl
 import droid.maxaria.maxander.newsapp.data.retrofit.ApiProvider
 import droid.maxaria.maxander.newsapp.domain.models.news_model_in_list.NewsModel
 import droid.maxaria.maxander.newsapp.domain.usecases.GetNewsListByCountryUseCase
 import droid.maxaria.maxander.newsapp.domain.usecases.GetNewsListByTagUseCase
 import kotlinx.coroutines.launch
-
-class ParentFragmentViewModel : ViewModel() {
-    //TODO DI
-    private val apiProvider = ApiProvider()
-    private val repository = RepositoryImpl(apiProvider)
-    private val getNewsListUseCase = GetNewsListByCountryUseCase(repository)
-    private val getNewsListByTagUseCase = GetNewsListByTagUseCase(repository)
-
+import javax.inject.Inject
+@HiltViewModel
+class ParentFragmentViewModel @Inject constructor(
+    private val getNewsListByCountryUseCase: GetNewsListByCountryUseCase,
+    private val getNewsListByTagUseCase: GetNewsListByTagUseCase
+) : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String>
         get() = _error
+
     private val _newsList = MutableLiveData<List<NewsModel>>()
     val newsList: LiveData<List<NewsModel>>
         get() = _newsList
+
     val currentCountry = MutableLiveData<String>()
     val currentNewsTag = MutableLiveData<String>()
 
     fun getNewsListByCountry(tag: String) {
         viewModelScope.launch {
-            val response = getNewsListUseCase(validateCountry(tag))
+            val response = getNewsListByCountryUseCase(validateCountry(tag))
             if (response != null) {
                 if(response.isNotEmpty()) {
                     _newsList.postValue(response)
